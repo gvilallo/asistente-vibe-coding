@@ -1,8 +1,9 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import SessionPage from './pages/SessionPage';
 import './App.css';
 
-// Componentes de página (temporales)
+// Página de inicio
 const HomePage = () => (
   <div style={{ padding: '40px 20px', textAlign: 'center' }}>
     <h1>Asistente de Vibe Coding</h1>
@@ -14,20 +15,48 @@ const HomePage = () => (
         el conocimiento de expertos de dominio y transformarlo en especificaciones técnicas.
       </p>
       <div style={{ display: 'flex', gap: '20px', marginTop: '30px', justifyContent: 'center' }}>
-        <button style={{ padding: '10px 20px', background: '#3498db', color: 'white', border: 'none', borderRadius: '4px' }}>
+        <Link 
+          to="/projects"
+          style={{ 
+            padding: '10px 20px', 
+            background: '#007bff', 
+            color: 'white', 
+            border: 'none', 
+            borderRadius: '4px',
+            textDecoration: 'none',
+            display: 'inline-block'
+          }}
+        >
           Ver Proyectos
-        </button>
-        <button style={{ padding: '10px 20px', background: '#f1f1f1', color: '#333', border: 'none', borderRadius: '4px' }}>
-          Nuevo Proyecto
-        </button>
+        </Link>
+        <Link 
+          to="/demo-session"
+          style={{ 
+            padding: '10px 20px', 
+            background: '#28a745', 
+            color: 'white', 
+            border: 'none', 
+            borderRadius: '4px',
+            textDecoration: 'none',
+            display: 'inline-block'
+          }}
+        >
+          🚀 Probar Demo
+        </Link>
       </div>
     </div>
   </div>
 );
 
+// Páginas temporales
 const ProjectsPage = () => <div>Lista de Proyectos (Por implementar)</div>;
 const ProjectPage = () => <div>Detalle de Proyecto (Por implementar)</div>;
-const SessionPage = () => <div>Sesión de Extracción (Por implementar)</div>;
+
+// Página demo para probar inmediatamente
+const DemoSessionPage = () => {
+  // Para el demo, usamos un sessionId fijo
+  return <SessionPage sessionId="demo" projectId="demo" />;
+};
 
 function App() {
   return (
@@ -38,6 +67,7 @@ function App() {
           <Route path="/projects" element={<ProjectsPage />} />
           <Route path="/projects/:projectId" element={<ProjectPage />} />
           <Route path="/projects/:projectId/sessions/:sessionId" element={<SessionPage />} />
+          <Route path="/demo-session" element={<DemoSessionPage />} />
         </Routes>
       </div>
     </Router>

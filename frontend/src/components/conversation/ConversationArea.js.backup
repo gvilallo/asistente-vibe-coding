@@ -1,0 +1,319 @@
+import React, { useState, useEffect, useRef } from 'react';
+
+function ConversationArea({ sessionId }) {
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [currentProgress, setCurrentProgress] = useState(null);
+  const [sessionReady, setSessionReady] = useState(false);
+  const messagesEndRef = useRef(null);
+
+  // Inicializar sesión al montar el componente
+  useEffect(() => {
+    if (sessionId === 'demo') {
+      initializeDemoSession();
+    } else if (sessionId) {
+      loadMessages();
+      loadProgress();
+    }
+  }, [sessionId]);
+
+  // Scroll automático al final
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  const initializeDemoSession = async () => {
+    try {
+      setIsLoading(true);
+      // Crear sesión demo
+      const response = await fetch('http://localhost:8000/demo/create-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        // Cargar mensajes después de crear la sesión
+        await loadMessages();
+        await loadProgress();
+        setSessionReady(true);
+      }
+    } catch (error) {
+      console.error('Error initializing demo session:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const loadMessages = async () => {
+    try {
+      const response = await fetch(`http://localhost:8000/sessions/${sessionId}/messages`);
+      if (response.ok) {
+        const data = await response.json();
+        setMessages(data);
+      }
+    } catch (error) {
+      console.error('Error loading messages:', error);
+    }
+  };
+
+  const loadProgress = async () => {
+    try {
+      const response = await fetch(`http://localhost:8000/sessions/${sessionId}/progress`);
+      if (response.ok) {
+        const data = await response.json();
+        setCurrentProgress(data);
+      }
+    } catch (error) {
+      console.error('Error loading progress:', error);
+    }
+  };
+
+  const handleSendMessage = async () => {
+    if (!input.trim() || isLoading) return;
+
+    const userMessage = {
+      sender: 'user',
+      content: input.trim(),
+      timestamp: new Date().toISOString()
+    };
+
+    // Agregar mensaje del usuario inmediatamente
+    setMessages(prev => [...prev, userMessage]);
+    setInput('');
+    setIsLoading(true);
+
+    try {
+      const response = await fetch(`http://localhost:8000/sessions/${sessionId}/interact`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ content: userMessage.content })
+      });
+
+      if (response.ok) {
+        const assistantMessage = await response.json();
+        setMessages(prev => [...prev, assistantMessage]);
+        
+        // Actualizar progreso
+        await loadProgress();
+      } else {
+        console.error('Error sending message');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
+  // Mostrar loading mientras se inicializa
+  if (sessionId === 'demo' && !sessionReady) {
+    return (
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '400px',
+        background: 'white',
+        borderRadius: '8px',
+        border: '1px solid #ddd'
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ marginBottom: '15px', fontSize: '18px' }}>🚀</div>
+          <div>Iniciando sesión de Vibe Coding...</div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      height: '70vh',
+      border: '1px solid #ddd',
+      borderRadius: '8px',
+      overflow: 'hidden',
+      background: 'white'
+    }}>
+      {/* Header con progreso */}
+      {currentProgress && (
+        <div style={{ 
+          padding: '15px 20px', 
+          background: '#f8f9fa', 
+          borderBottom: '1px solid #ddd'
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h3 style={{ margin: 0, color: '#333' }}>
+              Técnica {currentProgress.tecnica_actual} de {currentProgress.progreso.total_tecnicas}
+            </h3>
+            <div style={{ 
+              background: '#e9ecef', 
+              borderRadius: '10px', 
+              padding: '4px 12px',
+              fontSize: '14px',
+              fontWeight: 'bold'
+            }}>
+              {currentProgress.progreso.porcentaje}% completado
+            </div>
+          </div>
+          
+          {/* Barra de progreso */}
+          <div style={{ 
+            marginTop: '10px', 
+            background: '#e9ecef', 
+            borderRadius: '10px', 
+            height: '8px',
+            overflow: 'hidden'
+          }}>
+            <div style={{ 
+              background: '#28a745', 
+              height: '100%', 
+              width: `${currentProgress.progreso.porcentaje}%`,
+              transition: 'width 0.3s ease'
+            }} />
+          </div>
+        </div>
+      )}
+
+      {/* Área de mensajes */}
+      <div style={{ 
+        flex: 1, 
+        padding: '20px', 
+        overflowY: 'auto',
+        background: '#fff'
+      }}>
+        {messages.map((message, index) => (
+          <div key={index} style={{ 
+            marginBottom: '20px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: message.sender === 'user' ? 'flex-end' : 'flex-start'
+          }}>
+            <div style={{
+              background: message.sender === 'user' ? '#007bff' : '#f8f9fa',
+              color: message.sender === 'user' ? 'white' : '#333',
+              padding: '12px 16px',
+              borderRadius: '18px',
+              maxWidth: '80%',
+              boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
+              ...(message.sender === 'user' ? {
+                borderBottomRightRadius: '4px'
+              } : {
+                borderBottomLeftRadius: '4px'
+              })
+            }}>
+              <div>{message.content}</div>
+              
+              {/* Indicador de tipo de mensaje */}
+              {message.type && message.type !== 'respuesta' && (
+                <div style={{ 
+                  fontSize: '12px', 
+                  opacity: 0.7, 
+                  marginTop: '5px',
+                  fontStyle: 'italic'
+                }}>
+                  {message.type === 'pregunta' && '❓ Pregunta'}
+                  {message.type === 'inicio_sesion' && '🎯 Bienvenida'}
+                  {message.type === 'cambio_tecnica' && '🔄 Nueva técnica'}
+                  {message.type === 'finalizacion_completa' && '🎉 ¡Completado!'}
+                </div>
+              )}
+            </div>
+            
+            <div style={{ 
+              fontSize: '12px', 
+              color: '#666', 
+              marginTop: '5px',
+              marginLeft: message.sender === 'user' ? '0' : '16px',
+              marginRight: message.sender === 'user' ? '16px' : '0'
+            }}>
+              {message.sender === 'user' ? 'Tú' : 'Asistente'} • {new Date(message.timestamp).toLocaleTimeString()}
+            </div>
+          </div>
+        ))}
+        
+        {isLoading && (
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            marginBottom: '20px'
+          }}>
+            <div style={{
+              background: '#f8f9fa',
+              padding: '12px 16px',
+              borderRadius: '18px',
+              borderBottomLeftRadius: '4px'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <div style={{ marginRight: '10px' }}>El asistente está procesando</div>
+                <div style={{ display: 'flex', gap: '4px' }}>
+                  <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#007bff', animation: 'pulse 1.5s infinite' }}></div>
+                  <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#007bff', animation: 'pulse 1.5s infinite 0.2s' }}></div>
+                  <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#007bff', animation: 'pulse 1.5s infinite 0.4s' }}></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        <div ref={messagesEndRef} />
+      </div>
+
+      {/* Área de entrada */}
+      <div style={{ 
+        padding: '20px', 
+        borderTop: '1px solid #ddd',
+        background: '#f8f9fa'
+      }}>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <textarea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyPress={handleKeyPress}
+            placeholder="Describe tu respuesta aquí..."
+            style={{
+              flex: 1,
+              padding: '12px',
+              border: '1px solid #ddd',
+              borderRadius: '8px',
+              resize: 'none',
+              minHeight: '50px',
+              fontSize: '16px',
+              outline: 'none'
+            }}
+            disabled={isLoading}
+          />
+          <button
+            onClick={handleSendMessage}
+            disabled={!input.trim() || isLoading}
+            style={{
+              padding: '12px 24px',
+              background: input.trim() && !isLoading ? '#007bff' : '#ccc',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: input.trim() && !isLoading ? 'pointer' : 'not-allowed',
+              fontWeight: 'bold'
+            }}
+          >
+            Enviar
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default ConversationArea;

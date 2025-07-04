@@ -1,0 +1,51 @@
+import React from 'react';
+import { useParams, Link } from 'react-router-dom';
+import ConversationArea from '../components/conversation/ConversationArea';
+
+function SessionPage() {
+  const { sessionId, projectId } = useParams();
+
+  return (
+    <div style={{ padding: '20px' }}>
+      <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+        {/* Header */}
+        <div style={{ marginBottom: '20px' }}>
+          <Link 
+            to={`/projects/${projectId}`}
+            style={{ 
+              color: '#007bff', 
+              textDecoration: 'none',
+              fontSize: '14px'
+            }}
+          >
+            ← Volver al proyecto
+          </Link>
+          <h1 style={{ margin: '10px 0', color: '#333' }}>
+            Sesión de Extracción de Conocimiento
+          </h1>
+          <p style={{ color: '#666', margin: 0 }}>
+            Proceso interactivo de Vibe Coding - Responde las preguntas para generar especificaciones técnicas
+          </p>
+        </div>
+
+        {/* Área de conversación */}
+        <ConversationArea sessionId={sessionId} />
+        
+        {/* Footer con información */}
+        <div style={{ 
+          marginTop: '20px', 
+          padding: '15px', 
+          background: '#f8f9fa', 
+          borderRadius: '8px',
+          fontSize: '14px',
+          color: '#666'
+        }}>
+          <strong>💡 Tip:</strong> Sé específico y detallado en tus respuestas. El asistente traducirá tu conocimiento 
+          de dominio en especificaciones técnicas precisas. Puedes usar ejemplos concretos para ilustrar tus puntos.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default SessionPage;
