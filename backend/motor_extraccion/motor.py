@@ -81,16 +81,17 @@ class MotorExtraccion:
     
     def _calcular_progreso(self) -> Dict[str, Any]:
         total_tecnicas = obtener_total_tecnicas()
-        tecnicas_completadas = self.estado["tecnica_actual"] - 1
         
         if self.estado["completado"]:
             porcentaje = 100
+            tecnica_actual = total_tecnicas
         else:
+            tecnicas_completadas = self.estado["tecnica_actual"] - 1
             porcentaje = (tecnicas_completadas / total_tecnicas) * 100
         
         return {
             "porcentaje": min(100, round(porcentaje, 1)),
-            "tecnica_actual": self.estado["tecnica_actual"],
+            "tecnica_actual": min(self.estado["tecnica_actual"], total_tecnicas),
             "total_tecnicas": total_tecnicas
         }
     
@@ -99,3 +100,4 @@ class MotorExtraccion:
     
     def generar_super_prompt(self) -> Dict[str, Any]:
         return {"mensaje": "Super prompt generado (versión demo)"}
+
