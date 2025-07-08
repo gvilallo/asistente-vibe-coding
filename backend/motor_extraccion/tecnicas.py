@@ -57,6 +57,28 @@ TECNICAS = [
             "Si tu organización creciera significativamente, ¿qué aspectos del sistema deberían adaptarse?",
             "¿Qué componentes necesitarían ser personalizables por diferentes tipos de usuarios?"
         ]
+    },
+    {
+        "id": "analisis_volumen",
+        "nombre": "Análisis de Volumen y Criticidad",
+        "orden": 6,
+        "introduccion": "Ahora necesito entender qué procesos son más críticos y manejan mayor volumen de información.",
+        "preguntas": [
+            "¿Qué procesos o operaciones manejan el mayor volumen de información en tu sistema?",
+            "¿Qué operaciones son críticas y no pueden fallar bajo ninguna circunstancia?",
+            "¿Qué operaciones necesitan respuesta inmediata vs. cuáles pueden procesarse en segundo plano?"
+        ]
+    },
+    {
+        "id": "patrones_acceso",
+        "nombre": "Patrones de Acceso a Datos",
+        "orden": 7,
+        "introduccion": "Es importante entender cómo se accede y modifica la información en tu dominio.",
+        "preguntas": [
+            "Para cada tipo de información importante, ¿con qué frecuencia se consulta vs. se modifica?",
+            "¿Quién necesita acceso a cada tipo de información y con qué propósito?",
+            "¿Qué información necesita estar disponible en tiempo real vs. puede tener retrasos?"
+        ]
     }
 ]
 def obtener_tecnica_por_orden(orden):
