@@ -79,6 +79,61 @@ TECNICAS = [
             "¿Quién necesita acceso a cada tipo de información y con qué propósito?",
             "¿Qué información necesita estar disponible en tiempo real vs. puede tener retrasos?"
         ]
+    },
+    {
+        "id": "requisitos_no_funcionales",
+        "nombre": "Requisitos No Funcionales",
+        "orden": 8,
+        "introduccion": "Ahora me gustaría conocer tus expectativas sobre el funcionamiento general del sistema, más allá de lo que hace: cómo debe comportarse en cuanto a rapidez, disponibilidad y seguridad.",
+        "preguntas": [
+            "¿Qué tan rápido esperas que el sistema responda cuando lo usas en situaciones normales?",
+            "¿En qué situaciones sería inaceptable que el sistema deje de funcionar o no esté disponible?",
+            "¿Hay alguna preocupación sobre la seguridad o privacidad de la información que el sistema manejará?"
+        ]
+    },
+    {
+        "id": "gestion_estado",
+        "nombre": "Gestión de Estado",
+        "orden": 9,
+        "introduccion": "Ahora me gustaría saber cómo esperas que el sistema recuerde o gestione información entre diferentes usos o sesiones.",
+        "preguntas": [
+            "¿Hay información que deba mantenerse igual aunque cierres y vuelvas a abrir el sistema?",
+            "¿Qué datos deberían recordarse automáticamente para cada usuario entre diferentes sesiones de uso?",
+            "¿En qué situaciones sería importante que el sistema ‘olvide’ o reinicie cierta información?"
+        ]
+    },
+    {
+        "id": "restricciones_tecnologicas",
+        "nombre": "Restricciones Tecnológicas",
+        "orden": 10,
+        "introduccion": "Quisiera conocer si existen preferencias o limitaciones respecto a las tecnologías, plataformas o herramientas que debe usar el sistema.",
+        "preguntas": [
+            "¿El sistema debe funcionar en algún dispositivo, sistema operativo o navegador específico?",
+            "¿Hay alguna herramienta, plataforma o tecnología que prefieras evitar o que sea obligatoria usar?",
+            "¿El sistema debe integrarse con alguna tecnología o sistema que ya usas actualmente?"
+        ]
+    },
+    {
+        "id": "ciclo_vida_datos",
+        "nombre": "Ciclo de Vida de Datos",
+        "orden": 11,
+        "introduccion": "Me gustaría entender cómo debería manejarse la información a lo largo del tiempo dentro del sistema.",
+        "preguntas": [
+            "¿Qué información es importante guardar por mucho tiempo y cuál puede eliminarse después de un periodo?",
+            "¿Hay datos que deban actualizarse automáticamente o eliminarse bajo ciertas condiciones?",
+            "¿Quién debería poder ver, modificar o eliminar la información en diferentes etapas de su vida útil?"
+        ]
+    },
+    {
+        "id": "priorizacion_cualidades",
+        "nombre": "Priorización de Cualidades",
+        "orden": 12,
+        "introduccion": "Por último, quiero saber qué cualidades valoras más en el sistema para poder priorizarlas en el desarrollo.",
+        "preguntas": [
+            "Si tuvieras que elegir, ¿qué es más importante para ti: que el sistema sea rápido, seguro o fácil de usar?",
+            "¿En qué situaciones aceptarías sacrificar facilidad de uso por mayor seguridad, o viceversa?",
+            "¿Qué aspecto del sistema te generaría más problemas si no funcionara bien?"
+        ]
     }
 ]
 def obtener_tecnica_por_orden(orden):
